@@ -1,11 +1,8 @@
 Sistema: Interface Médico/Paciente
 
-Versão: 1.0
-
-Data: 12 de Setembro de 2026
 1. Visão Geral do Sistema
 
-O Sistema de Interface Médico/Paciente é uma plataforma digital projetada para intermediar a busca, o agendamento, a comunicação e o acompanhamento de consultas médicas. O sistema oferece recursos de gerenciamento de perfil, chat em tempo real, controle de acesso ao prontuário eletrônico e emissão de receitas médicas digitais.
+O Sistema de Interface Médico/Paciente é uma plataforma digital projetada para intermediar a busca, o agendamento, a comunicação e o acompanhamento de consultas médicas. O sistema oferece recursos de gerenciamento de perfil, controle de acesso ao prontuário eletrônico e emissão de receitas médicas digitais.
 2. Perfis de Usuário e Atores
 2.1. Paciente
 
@@ -48,64 +45,38 @@ RF03 – Gestão de Agendamento e Confirmação
 
     RF03.3: Tanto o médico quanto o paciente podem adiar (reagendar) ou cancelar uma consulta agendada, mediante envio de notificação/aviso prévio à outra parte.
 
-RF04 – Comunicação (Chat Médico ↔ Paciente)
+RF04 – Prontuário Eletrônico do Paciente (PEP)
 
-    RF04.1: O sistema deve disponibilizar um canal de chat direto entre paciente e médico assim que a solicitação de consulta for aceita.
+    RF04.1: O prontuário do paciente é um documento de caráter confidencial.
 
-    RF04.2: O chat deve permitir a troca de mensagens simples sobre o alinhamento do atendimento.
+    RF04.2: O médico só terá acesso aos prontuários anteriores do paciente caso o paciente conceda autorização prévia expressa no momento ou após o agendamento da consulta.
 
-RF05 – Prontuário Eletrônico do Paciente (PEP)
+    RF04.3: Após a conclusão do atendimento, o médico deve ser capaz de registrar atualizações, anotações e diagnósticos no prontuário do paciente.
 
-    RF05.1: O prontuário do paciente é um documento de caráter confidencial.
+RF05 – Histórico de Consultas
 
-    RF05.2: O médico só terá acesso aos prontuários anteriores do paciente caso o paciente conceda autorização prévia expressa no momento ou após o agendamento da consulta.
+    RF05.1: Cada consulta realizada deve gerar um registro no histórico de consultas, anexado ao prontuário do paciente.
 
-    RF05.3: Após a conclusão do atendimento, o médico deve ser capaz de registrar atualizações, anotações e diagnósticos no prontuário do paciente.
+    RF05.2: O histórico de consultas deve seguir as mesmas regras estritas de acesso e sigilo aplicadas ao prontuário principal.
 
-RF06 – Histórico de Consultas
+RF06 – Emissão e Acesso a Receitas/Documentos
 
-    RF06.1: Cada consulta realizada deve gerar um registro no histórico de consultas, anexado ao prontuário do paciente.
+    RF06.1: Após o término da consulta, o médico pode emitir e disponibilizar receitas médicas, atestados e prescrições.
 
-    RF06.2: O histórico de consultas deve seguir as mesmas regras estritas de acesso e sigilo aplicadas ao prontuário principal.
+    RF06.2: O paciente deve ter acesso permanente no seu perfil a todas as receitas e documentos emitidos ao final de cada atendimento.
 
-RF07 – Emissão e Acesso a Receitas/Documentos
+RF07 – Sistema de Notificações
 
-    RF07.1: Após o término da consulta, o médico pode emitir e disponibilizar receitas médicas, atestados e prescrições.
-
-    RF07.2: O paciente deve ter acesso permanente no seu perfil a todas as receitas e documentos emitidos ao final de cada atendimento.
-
-RF08 – Sistema de Notificações
-
-    RF08.1: O sistema deve emitir notificações automáticas para os usuários nos seguintes eventos:
+    RF07.1: O sistema deve emitir notificações automáticas para os usuários nos seguintes eventos:
 
         Recebimento de nova solicitação de consulta (Médico).
 
         Aceite, recusa, adiamento ou cancelamento de consulta (Paciente e Médico).
 
-        Novas mensagens recebidas no chat (Paciente e Médico).
-
         Liberação de novas receitas ou atualizações no prontuário após o término da consulta (Paciente).
 
-4. Requisitos Não Funcionais (RNF)
-RNF01 – Arquitetura e Integração
 
-    RNF01.1 (API REST / GraphQL): O sistema deve expor serviços por meio de uma API para comunicação entre a interface do cliente e o servidor.
-
-    RNF01.2 (Banco de Dados): O banco de dados deve ser relacional ou não-relacional adequado para armazenar informações de usuários, agendamentos, mensagens de chat e documentos médicos com integridade referencial.
-
-RNF02 – Segurança e Privacidade (LGPD / Sigilo Médico)
-
-    RNF02.1 (Controle de Acesso Fino): O acesso aos dados de prontuário e histórico de consultas deve ser rigorosamente controlado por permissões e chaves de autorização concedidas pelo paciente.
-
-    RNF02.2 (Criptografia): Dados sensíveis de saúde e mensagens do chat devem ser criptografados em trânsito (HTTPS/TLS) e em repouso no banco de dados.
-
-RNF03 – Desempenho e Disponibilidade
-
-    RNF03.1 (Tempo de Resposta): A troca de mensagens no chat e o envio de notificações devem ocorrer em tempo real ou com latência inferior a 2 segundos.
-
-    RNF03.2 (Disponibilidade): O sistema deve manter alta disponibilidade (meta de 99,9% uptime) para garantir atendimentos de urgência ou consultas agendadas.
-
-5. Fluxo Principal da Aplicação
+4. Fluxo Principal da Aplicação
 
 [Paciente busca médico] 
        │
@@ -116,7 +87,7 @@ RNF03 – Desempenho e Disponibilidade
 [Médico aceita solicitação?] ──(Não)──► [Solicitação recusada / Notifica paciente]
        │ (Sim)
        ▼
-[Ativa Chat + Define Horário/Local]
+[Define Horário/Local]
        │
        ├─► [Paciente autorizou prontuário?] ──(Sim)──► [Médico visualiza histórico prévio]
        │
