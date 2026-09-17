@@ -1,0 +1,104 @@
+Sistema: Interface Médico/Paciente
+
+1. Visão Geral do Sistema
+
+O Sistema de Interface Médico/Paciente é uma plataforma digital projetada para intermediar a busca, o agendamento, a comunicação e o acompanhamento de consultas médicas. O sistema oferece recursos de gerenciamento de perfil, controle de acesso ao prontuário eletrônico e emissão de receitas médicas digitais.
+2. Perfis de Usuário e Atores
+2.1. Paciente
+
+    Descrição: Usuário que busca atendimento médico, realiza agendamentos e gerencia seu histórico de saúde.
+
+    Atributos do Perfil:
+
+        Obrigatórios: Nome completo, idade, gênero, e-mail e número de contato.
+
+        Opcionais: Histórico de saúde prévio (ex.: indicação de diabetes, cirurgias anteriores, alergias, condições crônicas).
+
+2.2. Médico
+
+    Descrição: Profissional de saúde que disponibiliza agenda, aceita/recusa solicitações de consulta, atende pacientes e atualiza prontuários.
+
+    Atributos do Perfil:
+
+        Obrigatórios: Nome completo, idade, gênero, número de registro profissional (CRM), campo de especialização, instituições de saúde associadas, e-mail e número de contato.
+
+3. Requisitos Funcionais (RF)
+RF01 – Gestão de Usuários e Perfis
+
+    RF01.1: O sistema deve permitir o cadastro e autenticação para ambos os perfis (Paciente e Médico).
+
+    RF01.2: O paciente deve conseguir editar suas informações pessoais e seu histórico de saúde prévio a qualquer momento.
+
+    RF01.3: O médico deve cadastrar e manter atualizados seu CRM, especialização e instituições associadas.
+
+RF02 – Busca e Solicitação de Consultas
+
+    RF02.1: O paciente deve ser capaz de buscar médicos disponíveis para atendimento com base em especialidade, instituição ou disponibilidade.
+
+    RF02.2: O paciente deve poder enviar uma solicitação de consulta detalhando suas necessidades de saúde/motivo do atendimento.
+
+RF03 – Gestão de Agendamento e Confirmação
+
+    RF03.1: O médico deve ser notificado sobre novas solicitações e poderá aceitar ou recusar o pedido.
+
+    RF03.2: Após o aceite do médico, o sistema deve liberar a definição de horário e local de atendimento (presencial ou telemedicina).
+
+    RF03.3: Tanto o médico quanto o paciente podem adiar (reagendar) ou cancelar uma consulta agendada, mediante envio de notificação/aviso prévio à outra parte.
+
+RF04 – Prontuário Eletrônico do Paciente (PEP)
+
+    RF04.1: O prontuário do paciente é um documento de caráter confidencial.
+
+    RF04.2: O médico só terá acesso aos prontuários anteriores do paciente caso o paciente conceda autorização prévia expressa no momento ou após o agendamento da consulta.
+
+    RF04.3: Após a conclusão do atendimento, o médico deve ser capaz de registrar atualizações, anotações e diagnósticos no prontuário do paciente.
+
+RF05 – Histórico de Consultas
+
+    RF05.1: Cada consulta realizada deve gerar um registro no histórico de consultas, anexado ao prontuário do paciente.
+
+    RF05.2: O histórico de consultas deve seguir as mesmas regras estritas de acesso e sigilo aplicadas ao prontuário principal.
+
+RF06 – Emissão e Acesso a Receitas/Documentos
+
+    RF06.1: Após o término da consulta, o médico pode emitir e disponibilizar receitas médicas, atestados e prescrições.
+
+    RF06.2: O paciente deve ter acesso permanente no seu perfil a todas as receitas e documentos emitidos ao final de cada atendimento.
+
+RF07 – Sistema de Notificações
+
+    RF07.1: O sistema deve emitir notificações automáticas para os usuários nos seguintes eventos:
+
+        Recebimento de nova solicitação de consulta (Médico).
+
+        Aceite, recusa, adiamento ou cancelamento de consulta (Paciente e Médico).
+
+        Liberação de novas receitas ou atualizações no prontuário após o término da consulta (Paciente).
+
+
+4. Fluxo Principal da Aplicação
+
+[Paciente busca médico] 
+       │
+       ▼
+[Envia solicitação com necessidades]
+       │
+       ▼
+[Médico aceita solicitação?] ──(Não)──► [Solicitação recusada / Notifica paciente]
+       │ (Sim)
+       ▼
+[Define Horário/Local]
+       │
+       ├─► [Paciente autorizou prontuário?] ──(Sim)──► [Médico visualiza histórico prévio]
+       │
+       ▼
+[Realização da Consulta] ──(Opção de Cancelar/Adiar a qualquer momento com aviso)
+       │
+       ▼
+[Término da Consulta]
+       │
+       ▼
+[Médico atualiza Prontuário + Emite Receitas/Documentos]
+       │
+       ▼
+[Paciente recebe notificações e acesso aos documentos]
