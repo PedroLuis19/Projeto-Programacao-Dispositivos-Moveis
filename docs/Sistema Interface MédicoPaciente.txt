@@ -102,3 +102,4 @@ RF07 – Sistema de Notificações
        │
        ▼
 [Paciente recebe notificações e acesso aos documentos]
+.
