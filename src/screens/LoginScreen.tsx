@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation }: Props) {
 
       <TouchableOpacity 
         className="w-full bg-blue-600 p-4 rounded-xl items-center mb-4"
-        onPress={() => navigation.navigate('EditarPerfil', { usuarioId: '123' })}
+        onPress={() => navigation.navigate('Home')}
       >
         <Text className="text-white font-bold text-lg">Entrar</Text>
       </TouchableOpacity>
