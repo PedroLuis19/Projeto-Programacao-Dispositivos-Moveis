@@ -9,10 +9,24 @@ export type Medico = {
   telefone?: string;
 };
 
+export type TipoDocumento = 'Receita' | 'Laudo' | 'Recomendacao';
+
+export type DocumentoMedico = {
+  id: string;
+  tipo: TipoDocumento;
+  titulo: string;
+  dataEmissao: string;
+  descricao: string;
+  medicoNome: string;
+  medicoEspecialidade: string;
+  crm: string;
+};
+
 export type RootStackParamList = {
   Login: undefined;
   Cadastro: undefined;
   Home: undefined;
   EditarPerfil: { usuarioId?: string };
   PerfilMedico: { medico: Medico };
+  Documentos: undefined;
 };

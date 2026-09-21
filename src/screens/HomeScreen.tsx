@@ -63,7 +63,19 @@ export default function HomeScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
-      {/* Busca */}
+      <TouchableOpacity
+        className="bg-blue-600/20 border border-blue-500/40 p-4 rounded-2xl mb-6 flex-row justify-between items-center"
+        onPress={() => navigation.navigate('Documentos')}
+        >
+        <View>
+            <Text className="text-blue-400 font-bold text-base">Meus Documentos & Receitas</Text>
+            <Text className="text-slate-300 text-xs mt-0.5">
+            Acesse receitas, laudos e recomendações médicas
+            </Text>
+        </View>
+        <Text className="text-blue-400 font-bold text-xl">›</Text>
+        </TouchableOpacity>
+
       <View className="mb-6">
         <Text className="text-white font-semibold text-lg mb-2">Buscar Médicos</Text>
         <TextInput
@@ -75,7 +87,6 @@ export default function HomeScreen({ navigation }: Props) {
         />
       </View>
 
-      {/* Lista de Médicos */}
       <FlatList
         data={medicosFiltrados}
         keyExtractor={(item) => item.id}
@@ -94,6 +105,7 @@ export default function HomeScreen({ navigation }: Props) {
           </TouchableOpacity>
         )}
       />
+
     </View>
   );
 }
