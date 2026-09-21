@@ -13,18 +13,18 @@ export default function CadastroScreen({ navigation }: Props) {
       <TextInput
         placeholder="Nome Completo"
         placeholderTextColor="#9ca3af"
-        className="w-full bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
+        className="justify-center border-b-10 border-blue-500 px-2 bg-slate-800 text-white p-4 rounded-xl mb-4"
       />
       <TextInput
         placeholder="E-mail"
         placeholderTextColor="#9ca3af"
-        className="w-full bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
+        className="justify-center bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
       />
       <TextInput
         placeholder="Senha"
         secureTextEntry
         placeholderTextColor="#9ca3af"
-        className="w-full bg-slate-800 text-white p-4 rounded-xl mb-6 border border-slate-700"
+        className="justify-center bg-slate-800 text-white p-4 rounded-xl mb-6 border border-slate-700"
       />
 
       <TouchableOpacity 

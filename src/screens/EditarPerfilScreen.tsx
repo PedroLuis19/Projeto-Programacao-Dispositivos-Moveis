@@ -11,9 +11,9 @@ export default function EditarPerfilScreen({ navigation }: Props) {
       <Text className="text-white text-2xl font-bold mb-6">Editar Perfil</Text>
 
       <TextInput
-        defaultValue="Pedro Luis"
+        defaultValue="Nome Usuário"
         placeholderTextColor="#9ca3af"
-        className="w-full bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
+        className="justify-center bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
       />
 
       <TouchableOpacity 

@@ -13,14 +13,14 @@ export default function LoginScreen({ navigation }: Props) {
       <TextInput
         placeholder="E-mail"
         placeholderTextColor="#9ca3af"
-        className="w-full bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
+        className="justify-center bg-slate-800 text-white p-4 rounded-xl mb-4 border border-slate-700"
       />
       
       <TextInput
         placeholder="Senha"
         secureTextEntry
         placeholderTextColor="#9ca3af"
-        className="w-full bg-slate-800 text-white p-4 rounded-xl mb-6 border border-slate-700"
+        className="justify-center bg-slate-800 text-white p-4 rounded-xl mb-6 border border-slate-700"
       />
 
       <TouchableOpacity 
