@@ -38,7 +38,7 @@ Atualmente, o protótipo da aplicação contempla os seguintes fluxos e telas:
 
 ## Link do protótipo Figma
 
-[text](https://www.figma.com/design/i9u1BvSRLE9xg2p4GmvuHD/Sem-t%C3%ADtulo?node-id=1-4569&t=Kna1rpO14EqjwqVB-1)
+[Protótipo Figma](https://www.figma.com/design/i9u1BvSRLE9xg2p4GmvuHD/Sem-t%C3%ADtulo?node-id=1-4569&t=Kna1rpO14EqjwqVB-1)
 
 ## Tecnologias Utilizadas
 
