@@ -1,15 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
+import { RootStackParamList, Medico } from '../types/navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-// Exemplo simples de lista de médicos para a busca
-const MEDICOS_EXEMPLO = [
-  { id: '1', nome: 'Dra. Ana Silva', especialidade: 'Cardiologia', instituicao: 'Hospital Central' },
-  { id: '2', nome: 'Dr. Carlos Souza', especialidade: 'Pediatria', instituicao: 'Clínica São José' },
-  { id: '3', nome: 'Dra. Mariana Costa', especialidade: 'Dermatologia', instituicao: 'Atendimento Online' },
+// placeholde de médicos
+const MEDICOS_EXEMPLO: Medico[] = [
+  { 
+    id: '1', 
+    nome: 'Dra. Ana Silva', 
+    especialidade: 'Cardiologia', 
+    crm: '123456-SP',
+    instituicao: 'Hospital Central',
+    email: 'ana.silva@hospital.com',
+    sobre: 'Especialista em cardiologia preventiva com mais de 10 anos de experiência em atendimento presencial e exames de rotina.'
+  },
+  { 
+    id: '2', 
+    nome: 'Dr. Carlos Souza', 
+    especialidade: 'Pediatria', 
+    crm: '654321-RJ',
+    instituicao: 'Clínica São José',
+    email: 'carlos.souza@clinica.com',
+    sobre: 'Atendimento infantil humanizado, acompanhamento de crescimento e rotinas de vacinação.'
+  },
+  { 
+    id: '3', 
+    nome: 'Dra. Mariana Costa', 
+    especialidade: 'Dermatologia', 
+    crm: '987654-MG',
+    instituicao: 'Atendimento Online',
+    email: 'mariana.costa@telemed.com',
+    sobre: 'Atendimento via telemedicina focado em diagnósticos de pele e prescrição digital.'
+  },
 ];
 
 export default function HomeScreen({ navigation }: Props) {
@@ -24,7 +48,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-slate-900 px-4 pt-4">
-      {/* Cabeçalho do Usuário */}
+      {/* Cabeçalho */}
       <View className="flex-row justify-between items-center mb-6 pt-2">
         <View>
           <Text className="text-slate-400 text-sm">Bem-vindo(a),</Text>
@@ -39,6 +63,7 @@ export default function HomeScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
+      {/* Busca */}
       <View className="mb-6">
         <Text className="text-white font-semibold text-lg mb-2">Buscar Médicos</Text>
         <TextInput
@@ -50,16 +75,16 @@ export default function HomeScreen({ navigation }: Props) {
         />
       </View>
 
-      {/* lista de Médicos */}
-      <Text className="text-slate-300 font-semibold text-md mb-3">
-        {busca ? `Resultados (${medicosFiltrados.length})` : 'Médicos Disponíveis'}
-      </Text>
-
+      {/* Lista de Médicos */}
       <FlatList
         data={medicosFiltrados}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity className="bg-slate-800 p-4 rounded-xl mb-3 border border-slate-700 flex-row justify-between items-center">
+          <TouchableOpacity 
+            className="bg-slate-800 p-4 rounded-xl mb-3 border border-slate-700 flex-row justify-between items-center"
+            // Passa o objeto 'item' diretamente para a tela de perfil do médico
+            onPress={() => navigation.navigate('PerfilMedico', { medico: item })}
+          >
             <View>
               <Text className="text-white font-bold text-lg">{item.nome}</Text>
               <Text className="text-blue-400 text-sm font-medium">{item.especialidade}</Text>
@@ -68,9 +93,6 @@ export default function HomeScreen({ navigation }: Props) {
             <Text className="text-slate-400 text-xl font-bold">›</Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={
-          <Text className="text-slate-500 text-center mt-4">Nenhum médico encontrado.</Text>
-        }
       />
     </View>
   );

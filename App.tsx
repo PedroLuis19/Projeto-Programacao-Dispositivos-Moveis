@@ -8,6 +8,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import CadastroScreen from './src/screens/CadastroScreen';
 import EditarPerfilScreen from './src/screens/EditarPerfilScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import PerfilMedicoScreen from './src/screens/PerfilMedicoScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -36,6 +37,11 @@ export default function App() {
           name="Home"
           component={HomeScreen}
           options={{ title : 'Principal'}}
+        />
+        <Stack.Screen
+          name="PerfilMedico"
+          component={PerfilMedicoScreen}
+          options={{ title : 'Informações'}}
         />
         <Stack.Screen 
           name="EditarPerfil" 
