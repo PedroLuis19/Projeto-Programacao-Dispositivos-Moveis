@@ -17,6 +17,11 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 # Conexão com o banco PostgreSQL no Neon
 engine = create_engine(DATABASE_URL, echo=True)
 
+# Função de dependência para obter a sessão do banco de dados
+def get_session():
+    with Session(engine) as session:
+        yield session
+
 # -------------------------------------------------------------------
 # MODELOS DO BANCO DE DADOS (TABELAS)
 # -------------------------------------------------------------------
@@ -60,12 +65,12 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    SQLModel.metadata.create_all(engine)
-
-def get_session():
-    with Session(engine) as session:
-        yield session
-
+    try:
+        print("Tentando criar tabelas no Neon...")
+        SQLModel.metadata.create_all(engine)
+        print("Tabelas criadas ou verificadas com sucesso no Neon!")
+    except Exception as e:
+        print(f"ERRO ao conectar ou criar tabelas no banco: {e}")
 # -------------------------------------------------------------------
 # FUNÇÃO AUXILIAR DE NOTIFICAÇÃO PUSH
 # -------------------------------------------------------------------
