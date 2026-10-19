@@ -66,7 +66,7 @@ def get_session():
 def root():
     return {"status": "API conectada ao Neon PostgreSQL com suporte a Documentos!"}
 
-# --- MÉDICOS ---
+# MÉDICOS
 
 @app.post("/medicos", response_model=Medico, status_code=status.HTTP_201_CREATED)
 def criar_medico(medico: Medico, session: Session = Depends(get_session)):

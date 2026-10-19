@@ -1,55 +1,54 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList, Medico } from '../types/navigation';
+import { RootStackParamList } from '../types/navigation';
+import { API_URL } from '../services/api'; // Arquivo com 'http://SEU_IP:8000'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-// placeholde de médicos
-const MEDICOS_EXEMPLO: Medico[] = [
-  { 
-    id: '1', 
-    nome: 'Dra. Ana Silva', 
-    especialidade: 'Cardiologia', 
-    crm: '123456-SP',
-    instituicao: 'Hospital Central',
-    email: 'ana.silva@hospital.com',
-    sobre: 'Especialista em cardiologia preventiva com mais de 10 anos de experiência em atendimento presencial e exames de rotina.'
-  },
-  { 
-    id: '2', 
-    nome: 'Dr. Carlos Souza', 
-    especialidade: 'Pediatria', 
-    crm: '654321-RJ',
-    instituicao: 'Clínica São José',
-    email: 'carlos.souza@clinica.com',
-    sobre: 'Atendimento infantil humanizado, acompanhamento de crescimento e rotinas de vacinação.'
-  },
-  { 
-    id: '3', 
-    nome: 'Dra. Mariana Costa', 
-    especialidade: 'Dermatologia', 
-    crm: '987654-MG',
-    instituicao: 'Atendimento Online',
-    email: 'mariana.costa@telemed.com',
-    sobre: 'Atendimento via telemedicina focado em diagnósticos de pele e prescrição digital.'
-  },
-];
-
 export default function HomeScreen({ navigation }: Props) {
+  const [medicos, setMedicos] = useState<any[]>([]);
   const [busca, setBusca] = useState('');
+  const [carregando, setCarregando] = useState(true);
 
-  const medicosFiltrados = MEDICOS_EXEMPLO.filter(
-    (medico) =>
-      medico.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      medico.especialidade.toLowerCase().includes(busca.toLowerCase()) ||
-      medico.instituicao.toLowerCase().includes(busca.toLowerCase())
-  );
+  // Função para buscar médicos no FastAPI (Neon DB)
+  const carregarMedicos = async (termo = '') => {
+    try {
+      setCarregando(true);
+      const url = termo 
+        ? `${API_URL}/medicos?busca=${encodeURIComponent(termo)}`
+        : `${API_URL}/medicos`;
+
+      const response = await fetch(url);
+      const dados = await response.json();
+      setMedicos(dados);
+    } catch (error) {
+      console.error("Erro ao buscar médicos da API:", error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  // Carrega ao abrir a tela
+  useEffect(() => {
+    // Cria uma função async interna para buscar os dados
+    const buscarDados = async () => {
+      await carregarMedicos();
+    };
+
+    buscarDados();
+  }, []);
+
+  // Atualiza a busca com debounce simples ou ao digitar
+  const handleBusca = (texto: string) => {
+    setBusca(texto);
+    carregarMedicos(texto);
+  };
 
   return (
     <View className="flex-1 bg-slate-900 px-4 pt-4">
       {/* Cabeçalho */}
-      <View className="flex-row justify-between items-center mb-6 pt-2">
+      <View className="flex-row justify-between items-center mb-4 pt-2">
         <View>
           <Text className="text-slate-400 text-sm">Bem-vindo(a),</Text>
           <Text className="text-white text-2xl font-bold">Paciente</Text>
@@ -63,49 +62,56 @@ export default function HomeScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
+      {/* Atalho para Documentos */}
       <TouchableOpacity
         className="bg-blue-600/20 border border-blue-500/40 p-4 rounded-2xl mb-6 flex-row justify-between items-center"
         onPress={() => navigation.navigate('Documentos')}
-        >
+      >
         <View>
-            <Text className="text-blue-400 font-bold text-base">Meus Documentos & Receitas</Text>
-            <Text className="text-slate-300 text-xs mt-0.5">
+          <Text className="text-blue-400 font-bold text-base">Meus Documentos & Receitas</Text>
+          <Text className="text-slate-300 text-xs mt-0.5">
             Acesse receitas, laudos e recomendações médicas
-            </Text>
+          </Text>
         </View>
         <Text className="text-blue-400 font-bold text-xl">›</Text>
-        </TouchableOpacity>
+      </TouchableOpacity>
 
-      <View className="mb-6">
-        <Text className="text-white font-semibold text-lg mb-2">Buscar Médicos</Text>
-        <TextInput
-          value={busca}
-          onChangeText={setBusca}
-          placeholder="Pesquisar por nome, especialidade..."
-          placeholderTextColor="#9ca3af"
-          className="w-full bg-slate-800 text-white p-4 rounded-xl border border-slate-700"
-        />
-      </View>
-
-      <FlatList
-        data={medicosFiltrados}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity 
-            className="bg-slate-800 p-4 rounded-xl mb-3 border border-slate-700 flex-row justify-between items-center"
-            // Passa o objeto 'item' diretamente para a tela de perfil do médico
-            onPress={() => navigation.navigate('PerfilMedico', { medico: item })}
-          >
-            <View>
-              <Text className="text-white font-bold text-lg">{item.nome}</Text>
-              <Text className="text-blue-400 text-sm font-medium">{item.especialidade}</Text>
-              <Text className="text-slate-400 text-xs mt-1">{item.instituicao}</Text>
-            </View>
-            <Text className="text-slate-400 text-xl font-bold">›</Text>
-          </TouchableOpacity>
-        )}
+      {/* Barra de Pesquisa */}
+      <TextInput
+        value={busca}
+        onChangeText={handleBusca}
+        placeholder="Buscar médico por nome, especialidade..."
+        placeholderTextColor="#9ca3af"
+        className="bg-slate-800 text-white px-4 py-3 rounded-xl mb-4 border border-slate-700"
       />
 
+      {/* Lista de Médicos Dinâmica */}
+      {carregando ? (
+        <ActivityIndicator size="large" color="#3b82f6" className="mt-8" />
+      ) : (
+        <FlatList
+          data={medicos}
+          keyExtractor={(item) => String(item.id)}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text className="text-slate-500 text-center mt-8">Nenhum médico encontrado.</Text>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              className="bg-slate-800 p-4 rounded-2xl mb-3 border border-slate-700"
+              onPress={() => navigation.navigate('PerfilMedico', { medico: item })}
+            >
+              <View className="flex-row justify-between items-start mb-1">
+                <Text className="text-white font-bold text-base">{item.nome}</Text>
+                <Text className="text-blue-400 text-xs font-semibold bg-blue-950 px-2 py-0.5 rounded border border-blue-800">
+                  {item.especialidade}
+                </Text>
+              </View>
+              <Text className="text-slate-400 text-xs">CRM: {item.crm} • {item.instituicao}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </View>
   );
 }
