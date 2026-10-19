@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { API_URL } from '../services/api'; // Arquivo com 'http://SEU_IP:8000'
+import { API_URL } from '../services/api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -11,7 +11,6 @@ export default function HomeScreen({ navigation }: Props) {
   const [busca, setBusca] = useState('');
   const [carregando, setCarregando] = useState(true);
 
-  // Função para buscar médicos no FastAPI (Neon DB)
   const carregarMedicos = async (termo = '') => {
     try {
       setCarregando(true);
@@ -23,23 +22,19 @@ export default function HomeScreen({ navigation }: Props) {
       const dados = await response.json();
       setMedicos(dados);
     } catch (error) {
-      console.error("Erro ao buscar médicos da API:", error);
+      console.error("Erro ao buscar médicos:", error);
     } finally {
       setCarregando(false);
     }
   };
 
-  // Carrega ao abrir a tela
   useEffect(() => {
-    // Cria uma função async interna para buscar os dados
     const buscarDados = async () => {
       await carregarMedicos();
     };
-
     buscarDados();
   }, []);
 
-  // Atualiza a busca com debounce simples ou ao digitar
   const handleBusca = (texto: string) => {
     setBusca(texto);
     carregarMedicos(texto);
@@ -47,13 +42,11 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-slate-900 px-4 pt-4">
-      {/* Cabeçalho */}
       <View className="flex-row justify-between items-center mb-4 pt-2">
         <View>
           <Text className="text-slate-400 text-sm">Bem-vindo(a),</Text>
           <Text className="text-white text-2xl font-bold">Paciente</Text>
         </View>
-
         <TouchableOpacity
           className="bg-slate-800 px-4 py-2 rounded-xl border border-slate-700"
           onPress={() => navigation.navigate('EditarPerfil', { usuarioId: '123' })}
@@ -62,21 +55,17 @@ export default function HomeScreen({ navigation }: Props) {
         </TouchableOpacity>
       </View>
 
-      {/* Atalho para Documentos */}
       <TouchableOpacity
         className="bg-blue-600/20 border border-blue-500/40 p-4 rounded-2xl mb-6 flex-row justify-between items-center"
         onPress={() => navigation.navigate('Documentos')}
       >
         <View>
           <Text className="text-blue-400 font-bold text-base">Meus Documentos & Receitas</Text>
-          <Text className="text-slate-300 text-xs mt-0.5">
-            Acesse receitas, laudos e recomendações médicas
-          </Text>
+          <Text className="text-slate-300 text-xs mt-0.5">Acesse receitas e laudos médicos</Text>
         </View>
         <Text className="text-blue-400 font-bold text-xl">›</Text>
       </TouchableOpacity>
 
-      {/* Barra de Pesquisa */}
       <TextInput
         value={busca}
         onChangeText={handleBusca}
@@ -85,7 +74,6 @@ export default function HomeScreen({ navigation }: Props) {
         className="bg-slate-800 text-white px-4 py-3 rounded-xl mb-4 border border-slate-700"
       />
 
-      {/* Lista de Médicos Dinâmica */}
       {carregando ? (
         <ActivityIndicator size="large" color="#3b82f6" className="mt-8" />
       ) : (

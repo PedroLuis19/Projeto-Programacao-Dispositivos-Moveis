@@ -1,7 +1,9 @@
 import "./global.css";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 
 import { RootStackParamList } from './src/types/navigation';
 import LoginScreen from './src/screens/LoginScreen';
@@ -11,9 +13,44 @@ import HomeScreen from './src/screens/HomeScreen';
 import PerfilMedicoScreen from './src/screens/PerfilMedicoScreen';
 import DocumentosScreen from './src/screens/DocumentosScreen';
 
+// Configuração de notificação com tipagem flexível para evitar erros de versão
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldBadge: false,
+  } as any),
+});
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+
+  // Declaração da função ANTES de ser chamada no useEffect
+  async function registrarParaNotificacoesPush() {
+    if (!Device.isDevice) return;
+    
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    
+    if (finalStatus !== 'granted') return;
+
+    try {
+      await Notifications.getExpoPushTokenAsync();
+    } catch (error) {
+      console.error("Erro ao obter push token:", error);
+    }
+  }
+
+  useEffect(() => {
+    registrarParaNotificacoesPush();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator 
@@ -24,36 +61,12 @@ export default function App() {
           headerTitleStyle: { fontWeight: 'bold' },
         }}
       >
-        <Stack.Screen 
-          name="Login" 
-          component={LoginScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="Cadastro" 
-          component={CadastroScreen} 
-          options={{ title: 'Cadastro' }} 
-        />
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title : 'Principal'}}
-        />
-        <Stack.Screen
-          name="Documentos"  
-          component={DocumentosScreen}
-          options={{ title : 'Documentos'}}
-        />
-        <Stack.Screen
-          name="PerfilMedico"
-          component={PerfilMedicoScreen}
-          options={{ title : 'Informações'}}
-        />
-        <Stack.Screen 
-          name="EditarPerfil" 
-          component={EditarPerfilScreen} 
-          options={{ title: 'Editar Perfil' }} 
-        />
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Cadastro" component={CadastroScreen} options={{ title: 'Cadastro' }} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title : 'Principal'}} />
+        <Stack.Screen name="Documentos" component={DocumentosScreen} options={{ title : 'Documentos'}} />
+        <Stack.Screen name="PerfilMedico" component={PerfilMedicoScreen} options={{ title : 'Informações'}} />
+        <Stack.Screen name="EditarPerfil" component={EditarPerfilScreen} options={{ title: 'Editar Perfil' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -6,7 +6,6 @@ import { API_URL } from '../services/api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Documentos'>;
 
-// 1. Interface do Documento vindo do FastAPI (Neon DB)
 interface DocumentoBackend {
   id: number;
   id_paciente: number;
@@ -15,7 +14,6 @@ interface DocumentoBackend {
   conteudo_txt: string;
 }
 
-// 2. Interface do agrupamento por médico
 interface GrupoMedico {
   especialidade: string;
   crm: string;
@@ -74,7 +72,6 @@ export default function DocumentosScreen({ navigation }: Props) {
 
   return (
     <View className="flex-1 bg-slate-900 px-4 pt-4">
-      {/* Abas de Filtro */}
       <View className="flex-row mb-6 bg-slate-800 p-1.5 rounded-xl border border-slate-700 justify-between">
         {(['Todos', 'Receita', 'Laudo', 'Recomendacao'] as const).map((tipo) => (
           <TouchableOpacity
@@ -118,7 +115,6 @@ export default function DocumentosScreen({ navigation }: Props) {
                         <Text className="text-xs font-bold">{doc.tipo}</Text>
                       </View>
                     </View>
-
                     <Text className="text-slate-300 text-xs mb-2 leading-relaxed">
                       {doc.conteudo_txt}
                     </Text>
