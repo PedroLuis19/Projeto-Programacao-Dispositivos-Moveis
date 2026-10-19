@@ -60,10 +60,72 @@ Atualmente, o protótipo da aplicação contempla os seguintes fluxos e telas:
 
 ### Passo a passo
 
-1. **Clone o repositório:**
+**Clone o repositório:**
    ```bash
    git clone [https://github.com/PedroLuis19/Projeto-Programacao-Dispositivos-Moveis.git](https://github.com/PedroLuis19/Projeto-Programacao-Dispositivos-Moveis.git)
    cd Projeto-Programacao-Dispositivos-Moveis/MedConsu
+   ```
+
+O projeto está dividido em duas partes principais: o **Backend** e o **Frontend**. Ambos devem correr simultaneamente em terminais separados.
+
+---
+
+### 1. Configuração e Execução do Backend (FastAPI)
+
+1. Aceda à pasta do backend:
+   ```bash
+   cd backend
+   ```
+
+2. Crie e ative um ambiente virtual (`venv`):
+   * **No Windows (PowerShell):**
+     ```bash
+     python -m venv venv
+     .\venv\Scripts\Activate
+     ```
+   * **No macOS / Linux:**
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+3. Instale as dependências necessárias (FastAPI, SQLModel, Uvicorn e o driver PostgreSQL `psycopg`):
+   ```bash
+   pip install fastapi sqlmodel "psycopg[binary]" uvicorn
+   ```
+   *(Nota: Se houver um arquivo `requirements.txt`, pode executar `pip install -r requirements.txt`)*.
+
+4. Configure a string de conexão com a base de dados **Neon PostgreSQL** nas variáveis de ambiente ou diretamente no código de configuração do banco.
+
+5. Inicie o servidor backend:
+   ```bash
+   python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+   O servidor ficará disponível em `http://localhost:8000`. Pode consultar a documentação interativa em `http://localhost:8000/docs`.
+
+---
+
+### 2. Configuração e Execução do Frontend (React Native / Expo)
+
+1. Abra um **novo terminal** na pasta raiz do projeto (onde está o frontend).
+
+2. Instale as dependências do Node:
+   ```bash
+   npm install
+   ```
+
+3. Certifique-se de que o cliente HTTP (`axios`) está instalado para comunicar com a API:
+   ```bash
+   npm install axios
+   ```
+
+4. Verifique a configuração da URL base da API (geralmente em `src/services/api.ts`):
+   * Para o **Emulador Android**: utilize `http://10.0.2.2:8000`
+   * Para um **dispositivo físico** (na mesma rede Wi-Fi): utilize o endereço IP local da sua máquina (ex: `http://192.168.X.X:8000`).
+
+5. Inicie a aplicação com o Expo (limpando o cache para evitar conflitos):
+   ```bash
+   npx expo start -c
    ```
 
 ---
