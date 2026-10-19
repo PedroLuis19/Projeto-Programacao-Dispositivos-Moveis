@@ -1,102 +1,112 @@
-#Aqui que será feito a import os
-from typing import List, Optional
-from fastapi import FastAPI, HTTPException, Depends, status
-from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel, Field, Session, create_engine, select
-from dotenv import load_dotenv
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
+import { API_URL } from '../services/api'; // Arquivo com 'http://SEU_IP:8000'
 
-# Carrega a variável DATABASE_URL do arquivo .env
-load_dotenv()
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+export default function HomeScreen({ navigation }: Props) {
+  const [medicos, setMedicos] = useState<any[]>([]);
+  const [busca, setBusca] = useState('');
+  const [carregando, setCarregando] = useState(true);
 
-# Se o Neon retornar postgres:// no início, ajusta para postgresql:// para o SQLAlchemy
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+  // Função para buscar médicos no FastAPI (Neon DB)
+  const carregarMedicos = async (termo = '') => {
+    try {
+      setCarregando(true);
+      const url = termo 
+        ? `${API_URL}/medicos?busca=${encodeURIComponent(termo)}`
+        : `${API_URL}/medicos`;
 
-# Conexão com o banco de dados Neon
-engine = create_engine(DATABASE_URL, echo=True)
+      const response = await fetch(url);
+      const dados = await response.json();
+      setMedicos(dados);
+    } catch (error) {
+      console.error("Erro ao buscar médicos da API:", error);
+    } finally {
+      setCarregando(false);
+    }
+  };
 
-# -------------------------------------------------------------------
-# MODELOS DO BANCO DE DADOS (TABELAS)
-# -------------------------------------------------------------------
+  // Carrega ao abrir a tela
+  useEffect(() => {
+    carregarMedicos();
+  }, []);
 
-class Medico(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    nome: str
-    especialidade: str
-    crm: str = Field(unique=True, index=True)
-    instituicao: str
-    email: Optional[str] = None
-    sobre: Optional[str] = None
+  // Atualiza a busca com debounce simples ou ao digitar
+  const handleBusca = (texto: string) => {
+    setBusca(texto);
+    carregarMedicos(texto);
+  };
 
-class Paciente(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    nome: str
-    email: str = Field(unique=True, index=True)
-    senha: str
+  return (
+    <View className="flex-1 bg-slate-900 px-4 pt-4">
+      {/* Cabeçalho */}
+      <View className="flex-row justify-between items-center mb-4 pt-2">
+        <View>
+          <Text className="text-slate-400 text-sm">Bem-vindo(a),</Text>
+          <Text className="text-white text-2xl font-bold">Paciente</Text>
+        </View>
 
-# -------------------------------------------------------------------
-# CONFIGURAÇÃO DA APLICAÇÃO FASTAPI
-# -------------------------------------------------------------------
+        <TouchableOpacity
+          className="bg-slate-800 px-4 py-2 rounded-xl border border-slate-700"
+          onPress={() => navigation.navigate('EditarPerfil', { usuarioId: '123' })}
+        >
+          <Text className="text-blue-400 font-semibold">Meu Perfil</Text>
+        </TouchableOpacity>
+      </View>
 
-app = FastAPI(title="MedConsu API + Neon PostgreSQL")
+      {/* Atalho para Documentos */}
+      <TouchableOpacity
+        className="bg-blue-600/20 border border-blue-500/40 p-4 rounded-2xl mb-6 flex-row justify-between items-center"
+        onPress={() => navigation.navigate('Documentos')}
+      >
+        <View>
+          <Text className="text-blue-400 font-bold text-base">Meus Documentos & Receitas</Text>
+          <Text className="text-slate-300 text-xs mt-0.5">
+            Acesse receitas, laudos e recomendações médicas
+          </Text>
+        </View>
+        <Text className="text-blue-400 font-bold text-xl">›</Text>
+      </TouchableOpacity>
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+      {/* Barra de Pesquisa */}
+      <TextInput
+        value={busca}
+        onChangeText={handleBusca}
+        placeholder="Buscar médico por nome, especialidade..."
+        placeholderTextColor="#9ca3af"
+        className="bg-slate-800 text-white px-4 py-3 rounded-xl mb-4 border border-slate-700"
+      />
 
-# Cria as tabelas no Neon assim que o servidor inicia
-@app.on_event("startup")
-def on_startup():
-    SQLModel.metadata.create_all(engine)
-
-# Injeção de dependência para abrir e fechar sessões do banco por requisição
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-# -------------------------------------------------------------------
-# ROTAS DA API
-# -------------------------------------------------------------------
-
-@app.get("/")
-def root():
-    return {"status": "API conectada ao Neon PostgreSQL!"}
-
-# Cadastrar um novo médico no banco Neon
-@app.post("/medicos", response_model=Medico, status_code=status.HTTP_201_CREATED)
-def criar_medico(medico: Medico, session: Session = Depends(get_session)):
-    # Verifica se o CRM já foi cadastrado
-    crm_existente = session.exec(select(Medico).where(Medico.crm == medico.crm)).first()
-    if crm_existente:
-        raise HTTPException(
-            status_code=400, 
-            detail="Já existe um médico cadastrado com este CRM."
-        )
-    
-    session.add(medico)
-    session.commit()
-    session.refresh(medico)
-    return medico
-
-# Listar e buscar médicos cadastrados no banco Neon
-@app.get("/medicos", response_model=List[Medico])
-def listar_medicos(busca: Optional[str] = None, session: Session = Depends(get_session)):
-    query = select(Medico)
-    
-    if busca:
-        termo = f"%{busca.lower()}%"
-        # Busca case-insensitive no PostgreSQL
-        query = query.where(
-            (Medico.nome.ilike(termo)) | 
-            (Medico.especialidade.ilike(termo)) | 
-            (Medico.instituicao.ilike(termo))
-        )
-        
-    medicos = session.exec(query).all()
-    return medicosprogramação backend
+      {/* Lista de Médicos Dinâmica */}
+      {carregando ? (
+        <ActivityIndicator size="large" color="#3b82f6" className="mt-8" />
+      ) : (
+        <FlatList
+          data={medicos}
+          keyExtractor={(item) => String(item.id)}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text className="text-slate-500 text-center mt-8">Nenhum médico encontrado.</Text>
+          }
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              className="bg-slate-800 p-4 rounded-2xl mb-3 border border-slate-700"
+              onPress={() => navigation.navigate('PerfilMedico', { medico: item })}
+            >
+              <View className="flex-row justify-between items-start mb-1">
+                <Text className="text-white font-bold text-base">{item.nome}</Text>
+                <Text className="text-blue-400 text-xs font-semibold bg-blue-950 px-2 py-0.5 rounded border border-blue-800">
+                  {item.especialidade}
+                </Text>
+              </View>
+              <Text className="text-slate-400 text-xs">CRM: {item.crm} • {item.instituicao}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+    </View>
+  );
+}
